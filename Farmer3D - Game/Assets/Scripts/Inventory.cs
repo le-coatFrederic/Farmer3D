@@ -73,18 +73,18 @@ public class Inventory : MonoBehaviour
     private void RefreshContent()
     {
 
-        /*for (int i = 0; i < inventorySlotsParent.childCount; i++)
+        for (int i = 0; i < inventorySlotsParent.childCount; i++)
         {
             Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
 
             currentSlot.item = null;
             currentSlot.itemVisual.sprite = emptySlotVisual;
             currentSlot.countText.enabled = false;
-        }*/
+        }
 
         for (int i = 0; i < content.Count; i++)
         {
-           /* Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
+            Slot currentSlot = inventorySlotsParent.GetChild(i).GetComponent<Slot>();
 
             currentSlot.item = content[i].itemData;
             currentSlot.itemVisual.sprite = content[i].itemData.visuel;
@@ -93,8 +93,8 @@ public class Inventory : MonoBehaviour
             {
                 currentSlot.countText.enabled = true;
                 currentSlot.countText.text = content[i].count.ToString();
-            }*/
-            inventorySlotsParent.GetChild(i).GetChild(0).GetComponent<Image>().sprite = content[i].itemData.visuel;
+            }
+            //inventorySlotsParent.GetChild(i).GetChild(0).GetComponent<Image>().sprite = content[i].itemData.visuel;
         }
     }
 
