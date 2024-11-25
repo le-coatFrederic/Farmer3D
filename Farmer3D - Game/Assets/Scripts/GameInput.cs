@@ -51,7 +51,7 @@ public class GameInput : MonoBehaviour
 
     public bool GetSprintingInput()
     {
-        return playerInputAction.Player.Sprint.triggered;
+        return playerInputAction.Player.Sprint.IsPressed();
     }
 
     public bool GetJumpingInput() {

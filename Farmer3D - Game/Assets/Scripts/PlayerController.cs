@@ -1,5 +1,7 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
+using Quaternion = System.Numerics.Quaternion;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,9 +9,10 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private GameInput gameInput;
     [SerializeField] private PlayerAnimator animator;
+    [SerializeField] private PlayerCameraPosition cameraPosition;
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private float sprintRatio = 2f;
-    [SerializeField] private float rotateSpeed = 2f;
+    [SerializeField] private float rotateSpeed = 20f;
     [SerializeField] private float jumpForce = 2f;
 
     private bool isWalking = false;
@@ -27,38 +30,23 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         this.UpdateMovement();
+        this.UpdateRotation();
         this.UpdateAnimation();
     }
 
     public void UpdateMovement()
     {
-        if (this.characterController.isGrounded && this.velocity.y < 0)
-        {
-            this.velocity.y = 0f;
-        }
+        GroundInteraction();
         
         // Get input value
-        Vector3 moveDir = this.gameInput.GetMoveVectorNormalized();
+        Vector3 input = this.gameInput.GetMoveVectorNormalized();
+        Vector3 moveDir = this.transform.right * input.x + this.transform.forward * input.z;
 
         // Setting properties
         this.isWalking = moveDir != Vector3.zero;
         this.isRunning = this.gameInput.GetSprintingInput();
-
-        if (moveDir != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
-        }
         
-        velocity.y += Physics.gravity.y * Time.deltaTime;
-        moveDir = transform.TransformDirection(moveDir);
-        
-        if (this.isWalking)
-        {
-            this.transform.forward = Vector3.Slerp(this.transform.forward, moveDir, rotateSpeed * Time.deltaTime);
-        }
-        
-        if (this.isRunning)
+        if (this.isRunning && this.isWalking)
         {
             this.characterController.Move(moveDir * this.moveSpeed * this.sprintRatio * Time.deltaTime);
         }
@@ -68,9 +56,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void UpdateRotation()
+    {
+        Vector2 deltaInput = this.gameInput.GetLookVectorNormalized();
+        transform.eulerAngles = quaternion.RotateX(deltaInput.x * this.rotateSpeed * Time.deltaTime);
+        cameraPosition.SetCameraPosition(deltaInput.y * this.rotateSpeed * Time.deltaTime);
+    }
+
     public void UpdateAnimation() {
         this.animator.walking(this.isWalking);
         this.animator.running(this.isRunning);
+    }
+
+    public void GroundInteraction()
+    {
+        if (this.characterController.isGrounded && this.velocity.y < 0)
+        {
+            this.velocity.y = 0f;
+        }
     }
 }
 
