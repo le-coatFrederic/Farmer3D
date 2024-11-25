@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameInput : MonoBehaviour
@@ -7,7 +8,20 @@ public class GameInput : MonoBehaviour
     private void Awake()
     {
         playerInputAction = new InputSystem_Actions();
+    }
+
+    public void OnEnable() {
         playerInputAction.Player.Enable();
+    }
+
+    public void OnDisable() {
+        playerInputAction.Player.Disable();
+    }
+
+    public void Start()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public Vector3 GetMoveVector()
@@ -35,9 +49,12 @@ public class GameInput : MonoBehaviour
         return GetLookVector().normalized;
     }
 
-    public bool GetSprintingValue()
+    public bool GetSprintingInput()
     {
-        float sprintValue = playerInputAction.Player.Sprint.ReadValue<float>();
-        return sprintValue > 0f;
+        return playerInputAction.Player.Sprint.triggered;
+    }
+
+    public bool GetJumpingInput() {
+        return playerInputAction.Player.Jump.triggered;
     }
 }
